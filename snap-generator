@@ -1,0 +1,56 @@
+#! /usr/bin/python3
+
+import sys
+import os
+import errno
+from shutil import copyfile
+
+if len(sys.argv) < 2:
+    print('USAGE:')
+    print('snap-generator SNAP_NAME')
+    exit(1)
+
+snap_name = sys.argv[1]
+
+
+def generate_snap(snap_name):
+    try:
+        snap_folder = 'generated-snap/{}'.format(snap_name)
+        os.makedirs(snap_folder)
+
+        snapcraft_yaml = snap_folder + '/snapcraft.yaml'
+        copyfile('templates/snapcraft.yaml', snapcraft_yaml)
+        update_file(snapcraft_yaml, snap_name)
+
+        script = snap_folder + '/script.py'
+        copyfile('templates/script.py', script)
+        update_file(script, snap_name)
+
+        setup = snap_folder + '/setup.py'
+        copyfile('templates/setup.py', setup)
+        update_file(setup, snap_name)
+
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            print('Snap name already generated')
+
+
+def update_file(file_name, snap_name):
+    with open(file_name) as file_handle:
+        file_contents = file_handle.read()
+
+    file_contents = file_contents.replace('SNAPNAME', snap_name)
+
+    with open(file_name, 'w') as file_handle:
+        file_handle.write(file_contents)
+
+
+def create_folder_generated_snap():
+    try:
+        os.makedirs('generated-snap')
+    except OSError as e:
+        pass
+
+
+create_folder_generated_snap()
+generate_snap(snap_name)

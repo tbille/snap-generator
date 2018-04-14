@@ -1,0 +1,20 @@
+name: SNAPNAME
+version: "2.10"
+summary: GNU Hello, the "SNAPNAME world" snap
+description: GNU Hello prints a friendly greeting.
+grade: stable
+confinement: strict
+
+apps:
+  SNAPNAME:
+    command: usr/bin/python3 -u $SNAP/bin/script.py
+
+parts:
+  SNAPNAME:
+    plugin: python
+    python-version: python3
+    source: .
+    stage-packages:
+      - libc6
+    prime:
+      - -install
